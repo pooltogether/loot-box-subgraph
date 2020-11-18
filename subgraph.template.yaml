@@ -1,0 +1,113 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ERC721ControlledFactory # entry point
+    network: {{network}} #using mustache to pull in 
+    source:
+      abi: ERC721ControlledFactory
+      address: "{{ERC721ControlledFactory.address}}"
+      startBlock: {{ERC721ControlledFactory.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ERC721ControlledFactory
+      abis:
+        - name: ERC721ControlledFactory
+          file: ./abis/ERC721ControlledFactory.json
+      eventHandler:  
+        - event: ERC721ControlledCreated(address)
+          handler: handleERC721ControlledCreated #todo write this handler
+      file: ./src/mapping.ts
+  
+  
+  #erc721
+  - kind: ethereum/contract
+    name: ERC721
+    network: {{network}} #using mustache to pull in 
+    source:
+      abi: ERC721
+      startBlock: {{ERC721ControlledFactory.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      abis:
+        - name: ERC721
+          file: ./abis/ERC721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer 
+  
+    #for erc20
+  - kind: ethereum/contract
+    name: ERC20
+    network: {{network}} #using mustache to pull in 
+    source:
+      abi: ERC20
+      startBlock: {{ERC721ControlledFactory.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+        handler: handleTransfer    
+  
+  
+    # erc 1155
+  - kind: ethereum/contract
+    name: ERC721
+    network: {{network}} 
+    source:
+      abi: ERC1155
+      address: "{{ERC1155.address}}"
+      startBlock: {{ERC721ControlledFactory.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      abis:
+        - name: ERC1155
+          file: ./abis/ERC1155.json
+      eventHandlers:
+        - event: TransferSingle(indexed address,indexed address,uint256) # in the handler we are filter == lootbox address
+          handler: handleTransferSingle
+        - event: TransferBatch(indexed address,indexed address,uint256) # in the handler we are filter == lootbox address
+          handler: handleTransferBatch
+
+
+templates:
+  - name: ERC721Controlled
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: ERC721Controlled
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - ERC721Controlled
+      abis:
+        - name: ERC721Controlled
+          file: ./abis/ERC721Controlled.json
+      eventHandlers: # listen for Mint event -- erc721 _mint() emits a Transfer event
+        - event: Transfer
+          handler: handleMint  # this handler needs to call computeAddress in the lootbox controller
+
+
+
+
+
+      

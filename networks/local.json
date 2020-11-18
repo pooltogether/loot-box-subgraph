@@ -1,0 +1,8 @@
+{
+    "network": "mainnet",
+    "ERC721ControlledFactory": {
+      "address": "",
+      "startBlock": "1"
+    }
+  }
+  

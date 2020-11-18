@@ -1,6 +1,57 @@
-type ExampleEntity @entity {
+
+type Lootbox @entity{
+  id: ID! # loot box address as unique (address external erc's are sent to)
+  erc721: Bytes! #address the lootbox is controlled by 
+  tokenId: BigInt! #tokenId (combined with the erc721 to get id)
+  erc20Balances: [ERC20Balance!]! @derivedFrom(field:"address") 
+  erc721Token: [ERC721Token!]! @derivedFrom(field: "owner") 
+  erc1155Balances: [ERC1155Balance!]! @derivedFrom(field: "address")
+}
+
+type ERC20 @entity{
+  id: ID! # address
+  name: String
+  symbol: String
+  decimals: BigInt
+  balances: [ERC20Balance!]! @derivedFrom(field: "token")
+
+}
+
+type ERC20Balance @entity{
   id: ID!
-  count: BigInt!
-  owner: Bytes! # address
-  spender: Bytes! # address
+  balance: BigInt!
+  address: Bytes!
+  token: ERC20!
+}
+
+
+type ERC721 @entity{
+  id: ID!
+  name: String!
+  uri: String!
+  tokens: [ERC721Token!]! @derivedFrom(field: "token")
+}
+
+
+type ERC721Token @entity{
+
+  id: ID! #
+  tokenId: BigInt!
+  owner: Bytes! #address
+  token: ERC721!
+
+}
+
+type ERC1155 @entity{
+  id: ID!
+  tokenIds: [ERC1155Balance!]! @derivedFrom(field: "token")
+}
+
+type ERC1155Balance @entity{
+
+  id: ID!
+  tokenId: BigInt!
+  address: Bytes! 
+  token: ERC1155!
+  balance: BigInt!
 }
