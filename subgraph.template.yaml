@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721ControlledFactory # entry point
-    network: {{network}} #using mustache to pull in 
+    network: {{network}}
     source:
       abi: ERC721ControlledFactory
       address: "{{ERC721ControlledFactory.address}}"
@@ -18,16 +18,38 @@ dataSources:
       abis:
         - name: ERC721ControlledFactory
           file: ./abis/ERC721ControlledFactory.json
-      eventHandler:  
+      eventHandlers:  
         - event: ERC721ControlledCreated(address)
-          handler: handleERC721ControlledCreated #todo write this handler
+          handler: handleERC721ControlledCreated 
       file: ./src/mapping.ts
   
-  
+  #Lootbox 
+  - kind: ethereum/contract
+    name: LootBoxController
+    network: {{network}}
+    source:
+      abi: LootboxController
+      address: "{{LootboxController.address}}"
+      startBlock: {{LootboxController.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - LootboxController
+      abis:
+        - name: LootboxController
+          file: ./abis/LootboxController.json
+      eventHandlers:  
+        - event: Plundered(indexed address,indexed uint256,indexed address)
+          handler: handlePlundered
+      file: ./src/mapping.ts
+
+
   #erc721
   - kind: ethereum/contract
     name: ERC721
-    network: {{network}} #using mustache to pull in 
+    network: {{network}} 
     source:
       abi: ERC721
       startBlock: {{ERC721ControlledFactory.startBlock}}
@@ -35,18 +57,20 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
+      entities:
+        - ERC721
       file: ./src/mapping.ts
       abis:
         - name: ERC721
           file: ./abis/ERC721.json
       eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer 
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleERC721Transfer #does this need to have a different handler to ERC20 since the amount is indexed?
   
     #for erc20
   - kind: ethereum/contract
     name: ERC20
-    network: {{network}} #using mustache to pull in 
+    network: {{network}}  
     source:
       abi: ERC20
       startBlock: {{ERC721ControlledFactory.startBlock}}
@@ -54,35 +78,38 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
+      entities:
+        - ERC20
       file: ./src/mapping.ts
       abis:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
-        handler: handleTransfer    
+          handler: handleERC20Transfer    
   
   
     # erc 1155
   - kind: ethereum/contract
-    name: ERC721
+    name: ERC1155
     network: {{network}} 
     source:
       abi: ERC1155
-      address: "{{ERC1155.address}}"
       startBlock: {{ERC721ControlledFactory.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
+      entities:
+        - ERC1155
       file: ./src/mapping.ts
       abis:
         - name: ERC1155
           file: ./abis/ERC1155.json
       eventHandlers:
-        - event: TransferSingle(indexed address,indexed address,uint256) # in the handler we are filter == lootbox address
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256) # in the handler we are filter == lootbox address
           handler: handleTransferSingle
-        - event: TransferBatch(indexed address,indexed address,uint256) # in the handler we are filter == lootbox address
+        - event:  TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[]) # in the handler we are filter == lootbox address
           handler: handleTransferBatch
 
 
@@ -102,8 +129,10 @@ templates:
       abis:
         - name: ERC721Controlled
           file: ./abis/ERC721Controlled.json
+        - name: LootboxController
+          file: ./abis/LootboxController.json
       eventHandlers: # listen for Mint event -- erc721 _mint() emits a Transfer event
-        - event: Transfer
+        - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleMint  # this handler needs to call computeAddress in the lootbox controller
 
 
