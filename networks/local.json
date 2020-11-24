@@ -1,11 +1,11 @@
 {
     "network": "mainnet",
     "ERC721ControlledFactory": {
-      "address": "0x4fCAB0aBaa0f53eB4e0DB2E57c02C5E8F962406b",
+      "address": "0x884cf2FE5583Ba14C96ecB45cD234168F79D1619",
       "startBlock": "1"
     },
     "LootboxController": {
-      "address": "0x4fCAB0aBaa0f53eB4e0DB2E57c02C5E8F962406b",
+      "address": "0xF8819cB0e8aEB3FF451888512cB8f741378cc475",
       "startBlock": "1"
     }
   }

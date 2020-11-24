@@ -3,7 +3,7 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: ERC721ControlledFactory # entry point
+    name: ERC721ControlledFactory
     network: {{network}}
     source:
       abi: ERC721ControlledFactory
@@ -15,37 +15,17 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - ERC721ControlledFactory
+        - LootboxController
       abis:
         - name: ERC721ControlledFactory
           file: ./abis/ERC721ControlledFactory.json
-      eventHandlers:  
-        - event: ERC721ControlledCreated(address)
-          handler: handleERC721ControlledCreated 
-      file: ./src/mapping.ts
-  
-  #Lootbox 
-  - kind: ethereum/contract
-    name: LootBoxController
-    network: {{network}}
-    source:
-      abi: LootboxController
-      address: "{{LootboxController.address}}"
-      startBlock: {{LootboxController.startBlock}}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - LootboxController
-      abis:
         - name: LootboxController
           file: ./abis/LootboxController.json
       eventHandlers:  
-        - event: Plundered(indexed address,indexed uint256,indexed address)
-          handler: handlePlundered
+        - event: ERC721ControlledCreated(indexed address)
+          handler: handleERC721ControlledCreated 
       file: ./src/mapping.ts
-
-
+  
   #erc721
   - kind: ethereum/contract
     name: ERC721
@@ -65,7 +45,7 @@ dataSources:
           file: ./abis/ERC721.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleERC721Transfer #does this need to have a different handler to ERC20 since the amount is indexed?
+          handler: handleERC721Transfer
   
     #for erc20
   - kind: ethereum/contract
@@ -107,33 +87,10 @@ dataSources:
         - name: ERC1155
           file: ./abis/ERC1155.json
       eventHandlers:
-        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256) # in the handler we are filter == lootbox address
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256) 
           handler: handleTransferSingle
-        - event:  TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[]) # in the handler we are filter == lootbox address
+        - event:  TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
-
-
-templates:
-  - name: ERC721Controlled
-    kind: ethereum/contract
-    network: {{network}}
-    source:
-      abi: ERC721Controlled
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      file: ./src/mapping.ts
-      entities:
-        - ERC721Controlled
-      abis:
-        - name: ERC721Controlled
-          file: ./abis/ERC721Controlled.json
-        - name: LootboxController
-          file: ./abis/LootboxController.json
-      eventHandlers: # listen for Mint event -- erc721 _mint() emits a Transfer event
-        - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleMint  # this handler needs to call computeAddress in the lootbox controller
 
 
 
