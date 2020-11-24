@@ -77,13 +77,6 @@ export function handleERC20Transfer(event: Transfer) : void {
     else{
       erc20balance.balance = existingBalance.minus(amount)
     }
-    // now remove from lootbox 
-    // let _erc20Balances = lootboxFrom.erc20Balances
-    // const removeIndex = _erc20Balances.indexOf(erc20.id)
-    // if(removeIndex > -1){
-    //   _erc20Balances.splice(removeIndex,1)
-    // }
-    // lootboxFrom.erc20Balances = _erc20Balances
     lootboxFrom.save()
   }
 }
@@ -115,7 +108,6 @@ export function handleERC721Transfer(event: ERC721Transfer) : void {
   // erc721 transferred INTO lootbox
   let lootboxTo = Lootbox.load(to.toHex())
   if(lootboxTo != null) { // add erc721 to ERC721 collection
-    log.warning("erc721 transfer TO lootbox ", [])
     let erc721token = ERC721Token.load(generateCompositeId(erc721.id,lootboxTo.id))
     if(erc721token == null ) {
       erc721token = new ERC721Token(generateCompositeId(erc721.id, lootboxTo.id))
@@ -128,9 +120,6 @@ export function handleERC721Transfer(event: ERC721Transfer) : void {
       erc721token.owner = to.toHex()
       erc721token.save()
     }   
-    // let _erc721Tokens = lootboxTo.erc721Token
-    // _erc721Tokens.push(erc721token.id)
-    // lootboxTo.erc721Token = _erc721Tokens
     lootboxTo.save() 
   }
 
@@ -147,13 +136,6 @@ export function handleERC721Transfer(event: ERC721Transfer) : void {
       erc721token.owner = to.toHex()
     }
     erc721token.save()
-    //now remove from lootbox
-    // let _erc721Tokens = lootboxFrom.erc721Token
-    // const removeIndex = _erc721Tokens.indexOf(erc721token.id)
-    // if(removeIndex > -1){
-    //   _erc721Tokens.splice(removeIndex,1)
-    // }
-    // lootboxFrom.erc721Token = _erc721Tokens
     lootboxFrom.save()
   }
 }
@@ -169,8 +151,6 @@ export function handleMint(event : ERC721Transfer) : void {
   let lootboxControllerContract = LootboxController.bind(Address.fromString(LOOTBOX_CONTROLLER_ADDRESS))
   const lootBoxAddress = lootboxControllerContract.try_computeAddress(toAddress, tokenId).value
 
-  log.warning('New Lootbox created at: {}' , [lootBoxAddress.toHex()]) // for logging
-
   // construct a new lootbox entity with id = address calculated
   let lootbox = new Lootbox(lootBoxAddress.toHex())
   lootbox.tokenId = tokenId
@@ -182,7 +162,6 @@ export function handleMint(event : ERC721Transfer) : void {
 // global "external" erc1155 TransferSingle event
 export function handleTransferSingle(event: TransferSingle) : void {
   //extract data fields from event
-  log.warning("\n global erc1155 TransferSingle event handler ",[])
   const operator = event.params.operator // what do we do with the operator field? do we need it?
   const from = event.params.from
   const to = event.params.to
@@ -219,9 +198,6 @@ export function handleTransferSingle(event: TransferSingle) : void {
       erc1155Balance.balance = existingBalance.plus(value)
       erc1155Balance.save()
     }
-    // let _ERC1155Balances = lootboxTo.erc1155Balances
-    // _ERC1155Balances.push(erc1155Balance.id)
-    // lootboxTo.erc1155Balances = _ERC1155Balances
     lootboxTo.save()
   }
   // check against FROM field
@@ -236,12 +212,6 @@ export function handleTransferSingle(event: TransferSingle) : void {
       erc1155Balance.balance = existingBalance.minus(value)
       erc1155Balance.save()
     }
-    // let _ERC1155Balances = lootboxTo.erc1155Balances
-    // const removeIndex = _ERC1155Balances.indexOf(erc1155Balance.id)
-    // if(removeIndex > -1){
-    //   _ERC1155Balances.splice(removeIndex,1)
-    // }
-    // lootboxTo.erc1155Balances = _ERC1155Balances
     lootboxTo.save()
   }
 }
@@ -285,10 +255,6 @@ export function handleTransferBatch(event : TransferBatch) : void {
         erc1155Balance.balance = existingBalance.plus(values[index.toI32()])
         erc1155Balance.save()
       }
-      //update lootbox.erc1155Balances
-      // let _erc1155Balances = lootboxTo.erc1155Balances
-      // _erc1155Balances.push(erc1155Balance.id)
-      // lootboxTo.erc1155Balances = _erc1155Balances
       lootboxTo.save()
     }
   }
@@ -317,12 +283,6 @@ export function handleTransferBatch(event : TransferBatch) : void {
       erc1155Balance.balance = existingBalance.minus(values[index.toI32()])
       erc1155Balance.save()
     }
-    // let _ERC1155Balances = lootboxFrom.erc1155Balances
-    // const removeIndex = _ERC1155Balances.indexOf(erc1155Balance.id)
-    // if(removeIndex > -1){
-    //   _ERC1155Balances.splice(removeIndex,1)
-    // }
-    // lootboxFrom.erc1155Balances = _ERC1155Balances
     lootboxFrom.save()
     } 
   }
