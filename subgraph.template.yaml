@@ -21,6 +21,8 @@ dataSources:
           file: ./abis/ERC721ControlledFactory.json
         - name: LootboxController
           file: ./abis/LootboxController.json
+        - name: ERC721
+          file: ./abis/ERC721.json
       eventHandlers:  
         - event: ERC721ControlledCreated(indexed address)
           handler: handleERC721ControlledCreated 
@@ -43,6 +45,8 @@ dataSources:
       abis:
         - name: ERC721
           file: ./abis/ERC721.json
+        - name: LootboxController
+          file: ./abis/LootboxController.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleERC721Transfer

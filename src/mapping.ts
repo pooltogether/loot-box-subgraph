@@ -12,17 +12,18 @@ import {ERC721Controlled as ERC721ControlledTemplate } from "../generated/templa
 import { LootboxController } from "../generated/templates/ERC721Controlled/LootboxController"
 import {TransferBatch, TransferSingle, ERC1155} from "../generated/ERC1155/ERC1155"
 
-const LOOTBOX_CONTROLLER_ADDRESS : string = "0xF8819cB0e8aEB3FF451888512cB8f741378cc475"
+const LOOTBOX_CONTROLLER_ADDRESS : string = "0x51cf8623d75C27884AD83e8d5dEFE7F758647Aac"
 const ZERO_ADDRESS = Address.fromHexString("0x0000000000000000000000000000000000000000")
 
+// 
 export function handleERC721ControlledCreated(event: ERC721ControlledCreated): void {
+  log.warning("creating a new erc721 (lootbox=true) at {} \n \n \n ",[event.params.token.toHex()] )
   let erc721 = new ERC721(event.params.token.toHex()) 
   const erc721Contract = ERC721Contract.bind(event.params.token)
   erc721.name = erc721Contract.try_name().value
   erc721.uri = erc721Contract.try_baseURI().value
   erc721.isLootBox = true
   erc721.save()
-
 }
 
 
@@ -89,8 +90,6 @@ export function handleERC721Transfer(event: ERC721Transfer) : void {
 
   const erc721Address = event.address
 
-
-
   // load ERC721 entity
   let erc721 = ERC721.load(erc721Address.toHex())
   if(erc721 == null){ // we need to create  this entity
@@ -98,6 +97,7 @@ export function handleERC721Transfer(event: ERC721Transfer) : void {
     const erc721Contract = ERC721Contract.bind(erc721Address)
     erc721.name = erc721Contract.try_name().value
     erc721.uri = erc721Contract.try_baseURI().value
+    erc721.isLootBox = false //??
     erc721.save()
   }
   if(erc721.isLootBox && from.equals(ZERO_ADDRESS)){
@@ -194,27 +194,28 @@ export function handleTransferBatch(event : TransferBatch) : void {
   const lootboxTo = Lootbox.load(to.toHex())
   if(lootboxTo != null) {
     let erc1155 = ERC1155Entity.load(erc1155Address.toHex())
+    
     if(erc1155 == null) { 
       let erc1155 = new ERC1155Entity(erc1155Address.toHex())
       erc1155.save()
     }
 
-    const batchSize = new BigInt(values.length)
-    let index: BigInt = new BigInt(0)
-    for(index; index.lt(batchSize); index.plus(new BigInt(1))){
+    for(let i = 0 , len = values.length; i <len; i++){
       // check if ERC1155 entity exists, if null create
-      let erc1155Balance = ERC1155Balance.load(generateCompositeTokenId(erc1155.id, tokenIds[index.toI32()], lootboxTo.id))
+      let erc1155Balance = ERC1155Balance.load(generateCompositeTokenId(erc1155.id, tokenIds[i], lootboxTo.id))
       if(erc1155Balance == null) {
-        erc1155Balance = new ERC1155Balance(generateCompositeTokenId(erc1155.id, tokenIds[index.toI32()], lootboxTo.id))
-        erc1155Balance.tokenId = tokenIds[index.toI32()]
-        erc1155Balance.balance = values[index.toI32()]
+        erc1155Balance = new ERC1155Balance(generateCompositeTokenId(erc1155.id, tokenIds[i], lootboxTo.id))
+        erc1155Balance.tokenId = tokenIds[i]
+        erc1155Balance.balance = values[i]
         erc1155Balance.token = erc1155Address.toHex()
         erc1155Balance.address = lootboxTo.id
         erc1155Balance.save()
       }
       else {
+        
         const existingBalance = erc1155Balance.balance
-        erc1155Balance.balance = existingBalance.plus(values[index.toI32()])
+        let valueToAdd = new BigInt(values[i].toI32())
+        erc1155Balance.balance = existingBalance.plus(valueToAdd)
         erc1155Balance.save()
       }
     }
@@ -223,19 +224,17 @@ export function handleTransferBatch(event : TransferBatch) : void {
   // check against FROM field
   const lootboxFrom = Lootbox.load(from.toHex())
 
-  if(lootboxTo != null) {
+  if(lootboxFrom != null) {
     let erc1155 = ERC1155Entity.load(erc1155Address.toHex())
     if(erc1155 == null) { 
       erc1155 = new ERC1155Entity(erc1155Address.toHex())
       erc1155.save()
     }
     // reduce the balance of each of these from the array
-    const batchSize = new BigInt(values.length)
-    let index: BigInt = new BigInt(0)
-    for(index; index.lt(batchSize); index.plus(new BigInt(1))){
-      let erc1155Balance = ERC1155Balance.load(generateCompositeTokenId(erc1155.id, tokenIds[index.toI32()], lootboxFrom.id))
+    for(let i = 0 , len = values.length; i <len; i++){
+      let erc1155Balance = ERC1155Balance.load(generateCompositeTokenId(erc1155.id, tokenIds[i], lootboxFrom.id))
       const existingBalance = erc1155Balance.balance
-      erc1155Balance.balance = existingBalance.minus(values[index.toI32()])
+      erc1155Balance.balance = existingBalance.minus(values[i])
       erc1155Balance.save()     
     } 
   }
