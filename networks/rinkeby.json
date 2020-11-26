@@ -4,7 +4,7 @@
       "address": "0xF273EfaED59fED4F41cb9E693EefD9B1191f1522",
       "startBlock": "7612087"
     },
-    "LootboxController": {
+    "LootBoxController": {
       "address": "0x3FaB224830C182972239F6a599A5A5bd64e43d6D",
       "startBlock": "7612087"
     }
