@@ -40,7 +40,7 @@ $ docker-compose up
 
 ###### Deploying the Subgraph Locally
 
-Make sure you've already deployed the LootBox contracts.  If you haven't done so, check out the [mock project](https://github.com/pooltogether/loot-box.  Once the contracts are deployed, you can set up the subgraph:
+Make sure you've already deployed the LootBox contracts.  If you haven't done so, check out https://github.com/pooltogether/loot-box.  Once the contracts are deployed locally on ganache-cli (remember to use 0.0.0.0 as the IP address for the RPC endpoint), you can set up the subgraph:
 
 1. Install deps
 

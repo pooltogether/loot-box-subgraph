@@ -4,11 +4,27 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ aodhgan/lootbox",
+    "build:rinkeby": "graph build subgraph.rinkeby.yaml",
+    "auth": "graph auth https://api.thegraph.com/deploy/",
+      
     "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.yaml",
-    "create-local": "graph create --node http://localhost:8020/ aodhgan/lootbox",
-    "remove-local": "graph remove --node http://localhost:8020/ aodhgan/lootbox",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 aodhgan/lootbox"
+    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml",
+    "prepare:mainnet": "mustache networks/mainnet.json subgraph.template.yaml subgraph.mainnet.yaml",
+
+    "gen:mainnet": "graph codegen subgraph.mainnet.yaml",
+    "gen:rinkeby": "graph codegen subgraph.rinkeby.yaml",
+
+    "create:local": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
+    "create:rinkeby": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
+    
+    "remove:local": "graph remove --node http://localhost:8020/ pooltogether/loot-box-subgraph",
+
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pooltogether/loot-box-subgraph",
+    "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/loot-box-subgraph subgraph.mainnet.yaml",
+
+    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/rinkeby-loot-box-subgraph subgraph.rinkeby.yaml",
+    "deploy:rinkeby-stg": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/rinkeby-loot-box-staging-subgraph subgraph.rinkeby.yaml"
+    
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.19.0",
