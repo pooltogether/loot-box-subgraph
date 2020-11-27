@@ -17,8 +17,20 @@ const ZERO_ADDRESS = Address.fromHexString("0x0000000000000000000000000000000000
 export function handleERC721ControlledCreated(event: ERC721ControlledCreated): void {
   let erc721 = new ERC721(event.params.token.toHex()) 
   const erc721Contract = ERC721Contract.bind(event.params.token)
-  erc721.name = erc721Contract.try_name().value
-  erc721.uri = erc721Contract.try_baseURI().value
+  let erc721NameCall = erc721Contract.try_name()
+  if(erc721NameCall.reverted){
+    log.info("ERC721 Name call reverted",[])
+  }
+  else{
+    erc721.name = erc721NameCall.value
+  }
+  let erc721UriCall = erc721Contract.try_baseURI()
+  if(erc721UriCall.reverted){
+    log.info("ERC721 Base Uri call reverted ",[])
+  }
+  else{
+    erc721.uri = erc721UriCall.value
+  }
   erc721.isLootBox = true
   erc721.save()
 }
@@ -36,9 +48,27 @@ export function handleERC20Transfer(event: Transfer) : void {
   if(ERC20Entity.load(erc20Address.toHex()) == null){
     let erc20Contract = ERC20.bind(erc20Address)
     let erc20 = new ERC20Entity(erc20Address.toHex())
-    erc20.name = erc20Contract.try_name().value
-    erc20.symbol = erc20Contract.try_symbol().value
-    erc20.decimals = BigInt.fromI32(erc20Contract.try_decimals().value)
+    let tryNameCallResult = erc20Contract.try_name()
+    if(tryNameCallResult.reverted){
+      log.info("ERC20 try_name() call reverted",[])
+    }
+    else{
+      erc20.name = tryNameCallResult.value
+    }
+    let trySymbolCallResult = erc20Contract.try_symbol()
+    if(trySymbolCallResult.reverted){
+      log.info("ERC20 try_symbol() call reverted",[])
+    }
+    else{
+      erc20.symbol = trySymbolCallResult.value
+    }
+    let tryDecimalsCallResult = erc20Contract.try_decimals()
+    if(tryDecimalsCallResult.reverted){
+      log.info("ERC20 try_decimals() call reverted",[])
+    }
+    else{
+      erc20.decimals = BigInt.fromI32(tryDecimalsCallResult.value)
+    }    
     erc20.save()
   }
 
@@ -95,15 +125,34 @@ export function handleERC721Transfer(event: ERC721Transfer) : void {
   if(erc721 == null){ // we need to create  this entity
     erc721 = new ERC721(erc721Address.toHex())
     const erc721Contract = ERC721Contract.bind(erc721Address)
-    erc721.name = erc721Contract.try_name().value
-    erc721.uri = erc721Contract.try_baseURI().value
+    let erc721NameCall = erc721Contract.try_name()
+    if(erc721NameCall.reverted){
+      log.warning("ERC721 try_name() call reverted",[])
+    }
+    else{
+      erc721.name = erc721NameCall.value
+    }
+    let erc721baseUrlCall = erc721Contract.try_baseURI()
+    if(erc721baseUrlCall.reverted){
+      log.info("ERC721 try_baseUrl call reverted",[])
+    }
+    else{
+      erc721.uri = erc721baseUrlCall.value
+    }
     erc721.isLootBox = false
     erc721.save()
   }
   // if this erc721 is a lootbox and has just been minted
   if(erc721.isLootBox && from.equals(ZERO_ADDRESS)){
     let lootboxControllerContract = LootBoxController.bind(Address.fromString(LOOTBOX_CONTROLLER_ADDRESS))
-    const lootBoxAddress = lootboxControllerContract.try_computeAddress(erc721Address, tokenId).value
+    let computeAddressCall = lootboxControllerContract.try_computeAddress(erc721Address, tokenId)
+    let lootBoxAddress : Address
+    if(computeAddressCall.reverted){
+      log.warning("LootboxController compute address call reverted! ",[])
+    }
+    else{
+      lootBoxAddress = computeAddressCall.value
+    }
     let lootbox = new LootBox(lootBoxAddress.toHex())
     lootbox.tokenId = tokenId
     lootbox.erc721 = erc721Address
