@@ -27,8 +27,8 @@ type ERC20Balance @entity{
 type ERC721 @entity{
   id: ID!
   isLootBox: Boolean!
-  name: String!
-  uri: String!
+  name: String
+  uri: String
   erc721Tokens: [ERC721Token!]! @derivedFrom(field: "erc721")
 }
 
