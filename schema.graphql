@@ -1,11 +1,11 @@
 
-type Lootbox @entity{
+type LootBox @entity{
   id: ID! # loot box address as unique (address external erc's are sent to)
   erc721: Bytes! #address the lootbox is controlled by 
   tokenId: BigInt! #tokenId (combined with the erc721 to get id, need both because cant reverse)
-  erc20Balances: [ERC20Balance!]! @derivedFrom(field:"address") 
-  erc721Token: [ERC721Token!]! @derivedFrom(field: "owner") 
-  erc1155Balances: [ERC1155Balance!]! @derivedFrom(field: "address")
+  erc20Balances: [ERC20Balance!]! @derivedFrom(field:"lootbox") 
+  erc721Tokens: [ERC721Token!]! @derivedFrom(field: "lootbox") 
+  erc1155Balances: [ERC1155Balance!]! @derivedFrom(field: "lootbox")
 }
 
 type ERC20 @entity{
@@ -13,15 +13,15 @@ type ERC20 @entity{
   name: String
   symbol: String
   decimals: BigInt
-  balances: [ERC20Balance!]! @derivedFrom(field: "token")
+  balances: [ERC20Balance!]! @derivedFrom(field: "erc20")
 
 }
 
 type ERC20Balance @entity{
   id: ID! # composite string : lootbox.id + erc20.id
   balance: BigInt!
-  address: Lootbox!
-  token: ERC20!
+  lootbox: LootBox!
+  erc20: ERC20!
 }
 
 type ERC721 @entity{
@@ -29,25 +29,25 @@ type ERC721 @entity{
   isLootBox: Boolean!
   name: String!
   uri: String!
-  tokens: [ERC721Token!]! @derivedFrom(field: "token")
+  erc721Tokens: [ERC721Token!]! @derivedFrom(field: "erc721")
 }
 
 type ERC721Token @entity{
   id: ID! # composite string : lootbox.id + erc721.id
   tokenId: BigInt!
-  owner: Lootbox #address (was bytes)
-  token: ERC721!
+  lootbox: LootBox #address (was bytes)
+  erc721: ERC721!
 }
 
 type ERC1155 @entity{
   id: ID!
-  tokenIds: [ERC1155Balance!]! @derivedFrom(field: "token")
+  erc1155Balances: [ERC1155Balance!]! @derivedFrom(field: "erc1155")
 }
 
 type ERC1155Balance @entity{
   id: ID!
   tokenId: BigInt!
-  address: Lootbox!
-  token: ERC1155!
+  lootbox: LootBox!
+  erc1155: ERC1155!
   balance: BigInt!
 }
