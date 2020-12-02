@@ -21,9 +21,8 @@
 
     "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pooltogether/loot-box-subgraph",
     "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/loot-box-subgraph subgraph.mainnet.yaml",
-
-    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/rinkeby-loot-box-subgraph subgraph.rinkeby.yaml",
-    "deploy:rinkeby-stg": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/rinkeby-loot-box-staging-subgraph subgraph.rinkeby.yaml"
+    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby subgraph.rinkeby.yaml",
+    "deploy:rinkeby-stg": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby-staging subgraph.rinkeby.yaml"
     
   },
   "dependencies": {

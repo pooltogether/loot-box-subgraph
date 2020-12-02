@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721ControlledFactory
-    network: {{network}}
+    network: rinkeby
     source:
       abi: ERC721ControlledFactory
-      address: "{{ERC721ControlledFactory.address}}"
-      startBlock: {{ERC721ControlledFactory.startBlock}}
+      address: "0xF273EfaED59fED4F41cb9E693EefD9B1191f1522"
+      startBlock: 7612087
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -32,10 +32,10 @@ dataSources:
   #erc721
   - kind: ethereum/contract
     name: ERC721
-    network: {{network}} 
+    network: rinkeby 
     source:
       abi: ERC721
-      startBlock: {{ERC721ControlledFactory.startBlock}}
+      startBlock: 7612087
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -55,10 +55,10 @@ dataSources:
     #for erc20
   - kind: ethereum/contract
     name: ERC20
-    network: {{network}}  
+    network: rinkeby  
     source:
       abi: ERC20
-      startBlock: {{ERC721ControlledFactory.startBlock}}
+      startBlock: 7612087
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -77,10 +77,10 @@ dataSources:
     # erc 1155
   - kind: ethereum/contract
     name: ERC1155
-    network: {{network}} 
+    network: rinkeby 
     source:
       abi: ERC1155
-      startBlock: {{ERC721ControlledFactory.startBlock}}
+      startBlock: 7612087
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
