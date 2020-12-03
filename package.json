@@ -10,15 +10,15 @@
     "gen:local": "graph codegen subgraph.local.yaml",
 
 
-    "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.local.yaml",
-    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml",
+    "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.local.yaml && mustache networks/local.json src/constants.template.ts src/constants.ts",
+    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml && mustache networks/local.json src/constants.template.ts src/constants.ts",
     "prepare:mainnet": "mustache networks/mainnet.json subgraph.template.yaml subgraph.mainnet.yaml",
 
     "gen:mainnet": "graph codegen subgraph.mainnet.yaml",
     "gen:rinkeby": "graph codegen subgraph.rinkeby.yaml",
 
     "create:local": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
-    "create:rinkeby": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
+    "create:rinkeby": "graph create --node http://localhost:8020/ pooltogether/ptv3-lootbox-rinkeby-staging",
     
     "remove:local": "graph remove --node http://localhost:8020/ pooltogether/loot-box-subgraph",
 

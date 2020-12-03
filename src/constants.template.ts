@@ -1,0 +1,1 @@
+export const LOOTBOX_CONTROLLER_ADDRESS: string = "{{LootBoxController.address}}"
