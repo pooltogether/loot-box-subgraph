@@ -6,8 +6,11 @@
     "build": "graph build",
     "build:rinkeby": "graph build subgraph.rinkeby.yaml",
     "auth": "graph auth https://api.thegraph.com/deploy/",
-      
-    "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.yaml",
+    "clean": "rm -rf build/ generated/",
+    "gen:local": "graph codegen subgraph.local.yaml",
+
+
+    "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.local.yaml",
     "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml",
     "prepare:mainnet": "mustache networks/mainnet.json subgraph.template.yaml subgraph.mainnet.yaml",
 

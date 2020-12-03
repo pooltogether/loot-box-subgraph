@@ -46,6 +46,31 @@ export function handleERC721ControlledCreated(
   erc721.save()
 }
 
+function loadOrCreateERC20Entity(erc20Address: Address) : ERC20Entity{
+  let erc20Contract = ERC20.bind(erc20Address)
+  let erc20 = new ERC20Entity(erc20Address.toHex())
+  let tryNameCallResult = erc20Contract.try_name()
+  if (tryNameCallResult.reverted) {
+    log.info('ERC20 try_name() call reverted', [])
+  } else {
+    erc20.name = tryNameCallResult.value
+  }
+  let trySymbolCallResult = erc20Contract.try_symbol()
+  if (trySymbolCallResult.reverted) {
+    log.info('ERC20 try_symbol() call reverted', [])
+  } else {
+    erc20.symbol = trySymbolCallResult.value
+  }
+  let tryDecimalsCallResult = erc20Contract.try_decimals()
+  if (tryDecimalsCallResult.reverted) {
+    log.info('ERC20 try_decimals() call reverted', [])
+  } else {
+    erc20.decimals = BigInt.fromI32(tryDecimalsCallResult.value)
+  }
+  erc20.save()
+  return erc20 as ERC20Entity
+}
+
 // global "external" erc20 transfer
 export function handleERC20Transfer(event: Transfer): void {
   // get to and from fields from event
@@ -54,36 +79,18 @@ export function handleERC20Transfer(event: Transfer): void {
   const amount = event.params.value
   const erc20Address = event.address
 
-  // if erc20 does not exist in store - create it
-  if (ERC20Entity.load(erc20Address.toHex()) == null) {
-    let erc20Contract = ERC20.bind(erc20Address)
-    let erc20 = new ERC20Entity(erc20Address.toHex())
-    let tryNameCallResult = erc20Contract.try_name()
-    if (tryNameCallResult.reverted) {
-      log.info('ERC20 try_name() call reverted', [])
-    } else {
-      erc20.name = tryNameCallResult.value
-    }
-    let trySymbolCallResult = erc20Contract.try_symbol()
-    if (trySymbolCallResult.reverted) {
-      log.info('ERC20 try_symbol() call reverted', [])
-    } else {
-      erc20.symbol = trySymbolCallResult.value
-    }
-    let tryDecimalsCallResult = erc20Contract.try_decimals()
-    if (tryDecimalsCallResult.reverted) {
-      log.info('ERC20 try_decimals() call reverted', [])
-    } else {
-      erc20.decimals = BigInt.fromI32(tryDecimalsCallResult.value)
-    }
-    erc20.save()
-  }
-
   // load lootbox entity corresponding to the to/from address
   const lootboxTo = LootBox.load(to.toHex())
 
   // if erc20 transfer is TO the lootbox address we increment the balance of the lootbox
   if (lootboxTo != null) {
+
+    let erc20Entity : ERC20Entity;
+    // if erc20 does not exist in store - create it
+    if (ERC20Entity.load(erc20Address.toHex()) == null) {
+      erc20Entity = loadOrCreateERC20Entity(erc20Address)
+    }
+  
     let erc20balance = ERC20Balance.load(
       generateCompositeId(lootboxTo.id, erc20Address.toHex())
     )
@@ -107,7 +114,7 @@ export function handleERC20Transfer(event: Transfer): void {
   // erc20 transfer FROM lootbox decrement balance
   let lootboxFrom = LootBox.load(from.toHex())
   if (lootboxFrom != null) {
-    // if its a ERC20 transfer from the Lootbox to an outside address then the ERC20 should exist
+    // if its a ERC20 transfer from the Lootbox to an outside address then the ERC20 should already exist
     let erc20balance = ERC20Balance.load(
       generateCompositeId(lootboxFrom.id, erc20Address.toHex())
     )
@@ -121,18 +128,9 @@ export function handleERC20Transfer(event: Transfer): void {
   }
 }
 
-// global "external" erc721 Transfer event
-export function handleERC721Transfer(event: ERC721Transfer): void {
-  const to = event.params.to
-  const from = event.params.from
-  const tokenId = event.params.tokenId
-
-  const erc721Address = event.address
-
-  // load ERC721 entity
+function loadOrCreateERC721Entity(erc721Address : Address): ERC721Entity{
   let erc721 = ERC721Entity.load(erc721Address.toHex())
-  if (erc721 == null) {
-    // we need to create  this entity
+  if(erc721 == null){
     erc721 = new ERC721Entity(erc721Address.toHex())
     const erc721Contract = ERC721Contract.bind(erc721Address)
     let erc721NameCall = erc721Contract.try_name()
@@ -150,6 +148,29 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
     erc721.isLootBox = false
     erc721.save()
   }
+  return erc721 as ERC721Entity
+}
+
+// global "external" erc721 Transfer event
+export function handleERC721Transfer(event: ERC721Transfer): void {
+  const to = event.params.to
+  const from = event.params.from
+  const tokenId = event.params.tokenId
+
+  const erc721Address = event.address
+
+  let lootboxFrom = LootBox.load(from.toHex())
+  let lootboxTo = LootBox.load(to.toHex())
+
+
+  // loadOrCreate ERC721 entity if applicable
+  let erc721 : ERC721Entity
+
+  if (to.toHex() == lootboxTo.id) {
+    erc721 = loadOrCreateERC721Entity(erc721Address)
+  }
+
+
   // if this erc721 is a lootbox and has just been minted
   if (erc721.isLootBox && from.equals(ZERO_ADDRESS)) {
     let lootboxControllerContract = LootBoxController.bind(
@@ -172,7 +193,6 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
   }
 
   // case where ERC721 is transfered OUT of lootbox - before TO so can delete if applicable
-  let lootboxFrom = LootBox.load(from.toHex())
   if (lootboxFrom != null) {
     let erc721token = ERC721Token.load(
       generateCompositeId(erc721.id, tokenId.toHex())
@@ -181,7 +201,6 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
   }
 
   // erc721 transferred INTO lootbox
-  let lootboxTo = LootBox.load(to.toHex())
   if (lootboxTo != null) {
     // add erc721 to ERC721 collection
     let erc721token = ERC721Token.load(
@@ -192,7 +211,7 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
         generateCompositeId(erc721.id, tokenId.toHex())
       )
       erc721token.tokenId = tokenId
-      erc721token.erc721Entity = erc721.id
+      erc721token.erc721Entity = erc721.id 
       erc721token.lootbox = to.toHex()
       erc721token.save()
     } else {
@@ -212,15 +231,15 @@ export function handleTransferSingle(event: TransferSingle): void {
   const value = event.params.value
 
   const erc1155Address = event.address
-
+  const lootboxTo = LootBox.load(to.toHex())
   // check if ERC1155 entity exists, if null create
   let erc1155 = ERC1155Entity.load(erc1155Address.toHex())
-  if (erc1155 == null) {
+  if (erc1155 == null && to.toHex() == lootboxTo.id) {
     erc1155 = new ERC1155Entity(erc1155Address.toHex())
     erc1155.save()
   }
 
-  const lootboxTo = LootBox.load(to.toHex())
+  
   // case where ERC1155 is transferred TO the lootbox
   if (lootboxTo != null) {
     //add value to balance
@@ -276,7 +295,7 @@ export function handleTransferBatch(event: TransferBatch): void {
   if (lootboxTo != null) {
     let erc1155 = ERC1155Entity.load(erc1155Address.toHex())
 
-    if (erc1155 == null) {
+    if (erc1155 == null && to.toHex() == lootboxTo.id) {
       let erc1155 = new ERC1155Entity(erc1155Address.toHex())
       erc1155.save()
     }
