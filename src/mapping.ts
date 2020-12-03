@@ -28,6 +28,7 @@ export function handleERC721ControlledCreated(
   event: ERC721ControlledCreated
 ): void {
   let erc721 = new ERC721Entity(event.params.token.toHex())
+  log.warning("controlled created at {} ",[erc721.id])
   const erc721Contract = ERC721Contract.bind(event.params.token)
   let erc721NameCall = erc721Contract.try_name()
   if (erc721NameCall.reverted) {
