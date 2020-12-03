@@ -167,16 +167,19 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
     let lootboxControllerContract = LootBoxController.bind(
       Address.fromString(LOOTBOX_CONTROLLER_ADDRESS)
     )
+    log.warning("DEBUG:: calling computeAddress with erc721 {} and tokenId {} on contract {} ",[erc721Address.toHex(), tokenId.toString(), LOOTBOX_CONTROLLER_ADDRESS])
+
     let computeAddressCall = lootboxControllerContract.try_computeAddress(
       erc721Address,
       tokenId
     )
     let lootBoxAddress: Address
     if (computeAddressCall.reverted) {
-      log.warning('LootboxController compute address call reverted! ', [])
+      log.error('LootboxController compute address call reverted! ', [])
     } else {
       lootBoxAddress = computeAddressCall.value
     }
+    log.warning("DEBUG:: Creating a new lootbox at {} ",[lootBoxAddress.toHex()])
     let lootbox = new LootBox(lootBoxAddress.toHex())
     lootbox.tokenId = tokenId
     lootbox.erc721 = erc721Address

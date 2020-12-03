@@ -9,7 +9,7 @@
     "clean": "rm -rf build/ generated/",
     "gen:local": "graph codegen subgraph.local.yaml",
     "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.local.yaml && mustache networks/local.json src/constants.template.ts src/constants.ts",
-    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml && mustache networks/local.json src/constants.template.ts src/constants.ts",
+    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml && mustache networks/rinkeby.json src/constants.template.ts src/constants.ts",
     "prepare:mainnet": "mustache networks/mainnet.json subgraph.template.yaml subgraph.mainnet.yaml",
     "gen:mainnet": "graph codegen subgraph.mainnet.yaml",
     "gen:rinkeby": "graph codegen subgraph.rinkeby.yaml",
