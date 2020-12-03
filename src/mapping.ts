@@ -140,7 +140,7 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
   let erc721 = ERC721Entity.load(erc721Address.toHex())
 
   // if this erc721 is a lootbox and has just been minted
-  if (erc721.isLootBox && from.equals(ZERO_ADDRESS)) {
+  if (erc721 != null && erc721.isLootBox && from.equals(ZERO_ADDRESS)) {
     let lootboxControllerContract = LootBoxController.bind(
       Address.fromString(LOOTBOX_CONTROLLER_ADDRESS)
     )

@@ -7,8 +7,8 @@ dataSources:
     network: rinkeby
     source:
       abi: ERC721ControlledFactory
-      address: "0xF273EfaED59fED4F41cb9E693EefD9B1191f1522"
-      startBlock: 7612087
+      address: "0xF438bC6C3250BE17B361042cCa708A743a3FC5e5"
+      startBlock: 7617156
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -35,7 +35,7 @@ dataSources:
     network: rinkeby 
     source:
       abi: ERC721
-      startBlock: 7612087
+      startBlock: 7617156
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -58,7 +58,7 @@ dataSources:
     network: rinkeby  
     source:
       abi: ERC20
-      startBlock: 7612087
+      startBlock: 7617156
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -80,7 +80,7 @@ dataSources:
     network: rinkeby 
     source:
       abi: ERC1155
-      startBlock: 7612087
+      startBlock: 7617156
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
