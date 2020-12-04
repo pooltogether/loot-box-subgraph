@@ -79,15 +79,27 @@ export function handleERC20Transfer(event: Transfer): void {
   const amount = event.params.value
   const erc20Address = event.address
 
+  // log.warning("DEBUG:: erc20 handler invoked for erc20 address {} ", [erc20Address.toHex()])
   if(to.equals(from)){ // if token transfer is to same address ignore
+    log.warning("wowza to == from ",[])
     return;
   }
 
   // load lootbox entity corresponding to the to/from address
   const lootboxTo = LootBox.load(to.toHex())
+  
+  if(to.equals(Address.fromString("0x0f8e31424e20921fd7d75a8a97f009fec0830c85"))){
+    log.warning("this was to the test lootbox and lootBoxTo is {} ",[lootboxTo.id])
+
+  }
+
+  if(lootboxTo == null){
+    log.warning("this transfer was NOT to a lootbox ",[])
+  }
 
   // if erc20 transfer is TO the lootbox address we increment the balance of the lootbox
   if (lootboxTo != null) {
+    log.warning("DEBUG:: erc20 transfer was to lootbox {} ", [lootboxTo.id])
     // if erc20 does not exist in store - create it
     let erc20Entity = loadOrCreateERC20Entity(erc20Address)
     
@@ -95,6 +107,7 @@ export function handleERC20Transfer(event: Transfer): void {
       generateCompositeId(lootboxTo.id, erc20Entity.id)
     )
     if (erc20balance == null) {
+      log.warning("DEBUG:: erc20Balance did not exist creating",[])
       // create ERC20Balance
       erc20balance = new ERC20Balance(
         generateCompositeId(lootboxTo.id, erc20Entity.id)
@@ -105,6 +118,7 @@ export function handleERC20Transfer(event: Transfer): void {
       erc20balance.save()
     } else {
       // update case
+      log.warning("DEBUG:: erc20Balance update",[])
       const existingErc20balance = erc20balance.balance
       erc20balance.balance = existingErc20balance.plus(amount)
       erc20balance.save()
