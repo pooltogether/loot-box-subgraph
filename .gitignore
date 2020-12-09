@@ -3,3 +3,6 @@ yarn.lock
 build/
 generated/
 subgraph.yaml
+subgraph.local.yaml
+subgraph.rinkeby.yaml
+subgraph.ropsten.yaml

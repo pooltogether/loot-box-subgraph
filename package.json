@@ -6,30 +6,26 @@
     "build": "graph build",
     "build:rinkeby": "graph build subgraph.rinkeby.yaml",
     "auth": "graph auth https://api.thegraph.com/deploy/",
-      
-    "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.yaml",
-    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml",
+    "clean": "rm -rf build/ generated/",
+    "gen:local": "graph codegen subgraph.local.yaml",
+    "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.local.yaml && mustache networks/local.json src/constants.template.ts src/constants.ts",
+    "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml && mustache networks/rinkeby.json src/constants.template.ts src/constants.ts",
     "prepare:mainnet": "mustache networks/mainnet.json subgraph.template.yaml subgraph.mainnet.yaml",
-
     "gen:mainnet": "graph codegen subgraph.mainnet.yaml",
     "gen:rinkeby": "graph codegen subgraph.rinkeby.yaml",
-
     "create:local": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
-    "create:rinkeby": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
-    
+    "create:rinkeby": "graph create --node http://localhost:8020/ pooltogether/ptv3-lootbox-rinkeby-staging",
     "remove:local": "graph remove --node http://localhost:8020/ pooltogether/loot-box-subgraph",
-
-    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pooltogether/loot-box-subgraph",
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pooltogether/loot-box-subgraph subgraph.local.yaml",
     "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/loot-box-subgraph subgraph.mainnet.yaml",
     "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby subgraph.rinkeby.yaml",
     "deploy:rinkeby-stg": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby-staging subgraph.rinkeby.yaml"
-    
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.19.0",
     "@graphprotocol/graph-ts": "0.19.0",
+    "@pooltogether/loot-box": "^1.0.0-beta.5",
     "mustache": "^4.0.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
