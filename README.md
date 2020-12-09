@@ -60,7 +60,7 @@ $ yarn codegen
 $ cp subgraph.template.yaml subgraph.local.yaml
 ```
 
-4. Update the corresponding addresses in `networks/local.json` **and** the hardcoded LootBoxController Address in `src/mappings.ts`
+4. Update the corresponding addresses in `networks/local.json`
 
 
 5. Allocate the subgraph in the local Graph node
@@ -75,6 +75,13 @@ $ yarn create-local
 $ yarn deploy-local
 ```
 
+###### Deploying to Rinkeby
+
+Deploy to staging:
+
+```
+$ yarn prepare:rinkeby && yarn gen:rinkeby && yarn build:rinkeby && yarn deploy:rinkeby-stg
+```
 
 # Tag a Release
 
