@@ -74,3 +74,12 @@ $ yarn create-local
 ```bash
 $ yarn deploy-local
 ```
+
+
+# Tag a Release
+
+To git tag a new release using the `version` in the `package.json` use the command:
+
+```
+$ yarn tag-release
+```
