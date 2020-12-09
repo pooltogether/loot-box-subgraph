@@ -19,11 +19,11 @@ dataSources:
         - LootBoxController
       abis:
         - name: ERC721ControlledFactory
-          file: ./abis/ERC721ControlledFactory.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/ERC721ControlledFactory.json
         - name: LootBoxController
-          file: ./abis/LootBoxController.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/LootBoxController.json
         - name: ERC721
-          file: ./abis/ERC721.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/ERC721.json
       eventHandlers:  
         - event: ERC721ControlledCreated(indexed address)
           handler: handleERC721ControlledCreated 
@@ -45,9 +45,9 @@ dataSources:
       file: ./src/mapping.ts
       abis:
         - name: ERC721
-          file: ./abis/ERC721.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/ERC721.json
         - name: LootBoxController
-          file: ./abis/LootBoxController.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/LootBoxController.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleERC721Transfer
@@ -68,7 +68,7 @@ dataSources:
       file: ./src/mapping.ts
       abis:
         - name: ERC20
-          file: ./abis/ERC20.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/ERC20Upgradeable.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleERC20Transfer    
@@ -90,7 +90,7 @@ dataSources:
       file: ./src/mapping.ts
       abis:
         - name: ERC1155
-          file: ./abis/ERC1155.json
+          file: ./node_modules/@pooltogether/loot-box/artifacts/ERC1155Upgradeable.json
       eventHandlers:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256) 
           handler: handleTransferSingle

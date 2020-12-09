@@ -1,31 +1,28 @@
 {
   "name": "lootbox",
   "license": "UNLICENSED",
+  "version": "1.0.0-beta.9",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
     "build:rinkeby": "graph build subgraph.rinkeby.yaml",
     "auth": "graph auth https://api.thegraph.com/deploy/",
-      
     "prepare:local": "mustache networks/local.json subgraph.template.yaml subgraph.yaml",
     "prepare:rinkeby": "mustache networks/rinkeby.json subgraph.template.yaml subgraph.rinkeby.yaml",
     "prepare:mainnet": "mustache networks/mainnet.json subgraph.template.yaml subgraph.mainnet.yaml",
-
     "gen:mainnet": "graph codegen subgraph.mainnet.yaml",
     "gen:rinkeby": "graph codegen subgraph.rinkeby.yaml",
-
     "create:local": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
     "create:rinkeby": "graph create --node http://localhost:8020/ pooltogether/loot-box-subgraph",
-    
     "remove:local": "graph remove --node http://localhost:8020/ pooltogether/loot-box-subgraph",
-
     "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pooltogether/loot-box-subgraph",
     "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/loot-box-subgraph subgraph.mainnet.yaml",
     "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby subgraph.rinkeby.yaml",
-    "deploy:rinkeby-stg": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby-staging subgraph.rinkeby.yaml"
-    
+    "deploy:rinkeby-stg": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pooltogether/ptv3-lootbox-rinkeby-staging subgraph.rinkeby.yaml",
+    "tag-release": "PACKAGE_VERSION=$(./scripts/package-version.sh) && git tag -ae v$PACKAGE_VERSION && git push --tags"
   },
   "dependencies": {
+    "@pooltogether/loot-box": "^1.0.0-beta.9",
     "@graphprotocol/graph-cli": "0.19.0",
     "@graphprotocol/graph-ts": "0.19.0",
     "mustache": "^4.0.1"

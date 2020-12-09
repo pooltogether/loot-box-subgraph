@@ -1,11 +1,11 @@
 {
     "network": "rinkeby",
     "ERC721ControlledFactory": {
-      "address": "0xF273EfaED59fED4F41cb9E693EefD9B1191f1522",
-      "startBlock": "7612087"
+      "address": "0x1D90F79a8515F63881075Ec2C212e18272aD9E38",
+      "startBlock": "7691319"
     },
     "LootBoxController": {
-      "address": "0x3FaB224830C182972239F6a599A5A5bd64e43d6D",
-      "startBlock": "7612087"
+      "address": "0xb1EAc75da9bc31B078742C5AF9EDe62EFE31299D",
+      "startBlock": "7691318"
     }
 }
