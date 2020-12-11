@@ -363,10 +363,10 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/fixed-point/-/fixed-point-1.0.0-beta.2.tgz#d76a1e77f21833e9b680296d65526b0ffd7415d7"
   integrity sha512-aUw4R0Z2oM0AK3W4LIXyBaojTOzRRbhLDHX0egeuvxfjy4gBb6X66v81gI7Wngg/7O0y9QL/B8jWkUnAFzhTig==
 
-"@pooltogether/loot-box@^1.0.0-beta.9":
-  version "1.0.0-beta.9"
-  resolved "https://registry.yarnpkg.com/@pooltogether/loot-box/-/loot-box-1.0.0-beta.9.tgz#c7bad9ff669a2efb6a21554174959bedee723488"
-  integrity sha512-esV7waJJD8B/AfOw5hNoIJc4c0+uVvi5yrq11wvP2tzflk96xGVmvbDEXb1MoNEUfk4npkBUAeBUvGYTyNrzLg==
+"@pooltogether/loot-box@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@pooltogether/loot-box/-/loot-box-1.0.0.tgz#4ee74cd62661a07e38c020ce3fc7ca1e5c432e0e"
+  integrity sha512-jdZ584tDUp7rc3RcexVYKmWuj17OUsRpkk0EWE+KMOTHpB5H7S+Eg2x6u2B2Ya+KZxw5WFYbUZTxqYbCqlAvGw==
   dependencies:
     "@pooltogether/pooltogether-contracts" "3.1.0-beta.7"
     ganache-cli "^6.12.0"

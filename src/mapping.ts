@@ -167,6 +167,7 @@ export function handleERC721Transfer(event: ERC721Transfer): void {
     let lootboxControllerContract = LootBoxController.bind(
       Address.fromString(LOOTBOX_CONTROLLER_ADDRESS)
     )
+    log.warning("we have created a lootbox!! zzz txId {}", [event.transaction.hash.toHex()])
     let computeAddressCall = lootboxControllerContract.try_computeAddress(
       erc721Address,
       tokenId
