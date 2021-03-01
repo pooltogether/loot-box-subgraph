@@ -132,10 +132,7 @@ export function handleERC20Transfer(event: Transfer): void {
       return;
     }
 
-    const existingBalance = erc20Balance.balance // failing on this line
-    // whats happening is that it is deleting the ERC20Balance entity on the first tx
-    // then a transfer of zero out, while valid by ethereum our enitty is deleted
-
+    const existingBalance = erc20Balance.balance 
     erc20Balance.balance = existingBalance.minus(amount)
     if (erc20Balance.balance.equals(new BigInt(0))) {
       store.remove('ERC20Balance', erc20Balance.id)
