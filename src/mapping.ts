@@ -79,9 +79,17 @@ export function handleERC20Transfer(event: Transfer): void {
   const amount = event.params.value
   const erc20Address = event.address
 
+
+
   if(to.equals(from)){ // if token transfer is to same address ignore
     return;
   }
+
+  if(amount.equals(new BigInt(0))){
+    return;
+  }
+
+
 
   // load lootbox entity corresponding to the to/from address
   const lootboxTo = LootBox.load(to.toHex())
@@ -91,23 +99,23 @@ export function handleERC20Transfer(event: Transfer): void {
     // if erc20 does not exist in store - create it
     let erc20Entity = loadOrCreateERC20Entity(erc20Address)
     
-    let erc20balance = ERC20Balance.load(
+    let erc20Balance = ERC20Balance.load(
       generateCompositeId(lootboxTo.id, erc20Entity.id)
     )
-    if (erc20balance == null) {
+    if (erc20Balance == null) {
       // create ERC20Balance
-      erc20balance = new ERC20Balance(
+      erc20Balance = new ERC20Balance(
         generateCompositeId(lootboxTo.id, erc20Entity.id)
       )
-      erc20balance.balance = amount
-      erc20balance.erc20Entity = erc20Entity.id
-      erc20balance.lootbox = lootboxTo.id
-      erc20balance.save()
+      erc20Balance.balance = amount
+      erc20Balance.erc20Entity = erc20Entity.id
+      erc20Balance.lootbox = lootboxTo.id
+      erc20Balance.save()
     } else {
       // update case
-      const existingErc20balance = erc20balance.balance
-      erc20balance.balance = existingErc20balance.plus(amount)
-      erc20balance.save()
+      const existingErc20balance = erc20Balance.balance
+      erc20Balance.balance = existingErc20balance.plus(amount)
+      erc20Balance.save()
     }
   }
 
@@ -115,15 +123,21 @@ export function handleERC20Transfer(event: Transfer): void {
   let lootboxFrom = LootBox.load(from.toHex())
   if (lootboxFrom != null) {
     // if its a ERC20 transfer from the Lootbox to an outside address then the ERC20 should already exist
-    let erc20balance = ERC20Balance.load(
+    let erc20Balance = ERC20Balance.load(
       generateCompositeId(lootboxFrom.id, erc20Address.toHex())
     )
-    const existingBalance = erc20balance.balance
-    erc20balance.balance = existingBalance.minus(amount)
-    if (erc20balance.balance.equals(new BigInt(0))) {
-      store.remove('ERC20Balance', erc20balance.id)
+
+    if(erc20Balance == null && amount.equals(new BigInt(0))){
+      // zero value transfer out - double plunder?
+      return;
+    }
+
+    const existingBalance = erc20Balance.balance 
+    erc20Balance.balance = existingBalance.minus(amount)
+    if (erc20Balance.balance.equals(new BigInt(0))) {
+      store.remove('ERC20Balance', erc20Balance.id)
     } else {
-      erc20balance.save()
+      erc20Balance.save()
     }
   }
 }
