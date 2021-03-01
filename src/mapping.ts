@@ -79,15 +79,13 @@ export function handleERC20Transfer(event: Transfer): void {
   const amount = event.params.value
   const erc20Address = event.address
 
-  log.info("handleERC20Transfer called with {} {} {} {}",[to.toHexString(), from.toHexString(), amount.toHexString(), erc20Address.toHexString()])
-  log.info("txID : ", [event.transaction.hash.toHexString()])
+
 
   if(to.equals(from)){ // if token transfer is to same address ignore
     return;
   }
 
   if(amount.equals(new BigInt(0))){
-    log.info("zero value tx -returning",[])
     return;
   }
 
@@ -98,7 +96,6 @@ export function handleERC20Transfer(event: Transfer): void {
   
   // if erc20 transfer is TO the lootbox address we increment the balance of the lootbox
   if (lootboxTo != null) {
-      log.info("tx was TO lootbox ",[])
     // if erc20 does not exist in store - create it
     let erc20Entity = loadOrCreateERC20Entity(erc20Address)
     
@@ -106,25 +103,18 @@ export function handleERC20Transfer(event: Transfer): void {
       generateCompositeId(lootboxTo.id, erc20Entity.id)
     )
     if (erc20Balance == null) {
-      log.info("debug101",[])
       // create ERC20Balance
       erc20Balance = new ERC20Balance(
         generateCompositeId(lootboxTo.id, erc20Entity.id)
       )
-      log.info("debug102",[] )
       erc20Balance.balance = amount
-      log.info("debug103",[] )
       erc20Balance.erc20Entity = erc20Entity.id
-      log.info("debug104",[] )
       erc20Balance.lootbox = lootboxTo.id
       erc20Balance.save()
     } else {
       // update case
-      log.info("debug105",[] )
       const existingErc20balance = erc20Balance.balance
-      log.info("debug106",[] )
       erc20Balance.balance = existingErc20balance.plus(amount)
-      log.info("debug107",[] )
       erc20Balance.save()
     }
   }
@@ -132,7 +122,6 @@ export function handleERC20Transfer(event: Transfer): void {
   // erc20 transfer FROM lootbox decrement balance
   let lootboxFrom = LootBox.load(from.toHex())
   if (lootboxFrom != null) {
-    log.info("debug108",[] )
     // if its a ERC20 transfer from the Lootbox to an outside address then the ERC20 should already exist
     let erc20Balance = ERC20Balance.load(
       generateCompositeId(lootboxFrom.id, erc20Address.toHex())
@@ -140,22 +129,17 @@ export function handleERC20Transfer(event: Transfer): void {
 
     if(erc20Balance == null && amount.equals(new BigInt(0))){
       // zero value transfer out - double plunder?
-      log.info("zero value tx returning",[])
       return;
     }
 
-
-    log.info("debug1081",[] )
     const existingBalance = erc20Balance.balance // failing on this line
     // whats happening is that it is deleting the ERC20Balance entity on the first tx
     // then a transfer of zero out, while valid by ethereum our enitty is deleted
-    log.info("debug109",[] )
+
     erc20Balance.balance = existingBalance.minus(amount)
     if (erc20Balance.balance.equals(new BigInt(0))) {
-      log.info("debug110",[] )
       store.remove('ERC20Balance', erc20Balance.id)
     } else {
-      log.info("debug111",[] )
       erc20Balance.save()
     }
   }
